@@ -1,9 +1,12 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Typography, IconButton, Divider, Card } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-
+// import interne
+import { dateType, formatDate } from '../../types';
+import { convertir } from '../../services/convertionDate';
+import { dispos } from '../../datas/dispos';
 // import des composants mui stylés
 import {
   StyledBox,
@@ -69,6 +72,8 @@ const datas: Array<date> = [
 
 const Calendar: FC = () => {
   const [arraydatas, setArraydatas] = useState(datas);
+  const [avaib, setAvaib] = useState<formatDate[]>([]);
+  //  const [arraydatas, setArraydatas] = useState<formatDate>();
   // state pour la longueur du tableau de disponibilité
   const [arraylength, setArraylength] = useState(4);
   // state pour connaite la valeur de la plus grande longueur de tableau slots
@@ -81,7 +86,7 @@ const Calendar: FC = () => {
   // fonction permettant de récupérer la longueur du tableau des slots
   // et si cette longueur > 3 on affiche le button 'voir plus d'horaire"
 
-  const getLengthArray = (array: Array<date>) => {
+  const getLengthArray = (array: Array<formatDate>) => {
     const greatLength: number[] = [];
     {
       array.map((data) => {
@@ -96,34 +101,62 @@ const Calendar: FC = () => {
     }
   };
   // fonction vérifiant la résolution de l'écran et selon la résolution modifie le tableau des dates
-  const getResolution = () => {
+  // const getResolution = () => {
+  //   const resolution = window.screen.width;
+  //   setArraylength(4);
+  //   console.log(resolution);
+  //   if (resolution < 768) {
+  //     // on reduit le tableau à une longueur de 3 afin d'afficher que les 3 premiers jours
+  //     // puis on mappe le tableau pour trouver la longueur du tableau de slots la plus grande entre les 3 jours
+  //     setArraydatas(datas.slice(0, 3));
+  //     const newArray = datas.slice(0, 3);
+  //     getLengthArray(newArray);
+  //   } else if (resolution < 1024) {
+  //     setArraydatas(datas.slice(0, 4));
+  //     const newArray = datas.slice(0, 4);
+  //     getLengthArray(newArray);
+  //   } else {
+  //     // on récupére tous les jours
+  //     getLengthArray(datas);
+  //     setArraydatas(datas);
+  //   }
+  // };
+  const getResolutionB = () => {
     const resolution = window.screen.width;
     setArraylength(4);
     console.log(resolution);
+    const test = convertir(dispos);
+    setAvaib(test);
+    console.log(test);
     if (resolution < 768) {
       // on reduit le tableau à une longueur de 3 afin d'afficher que les 3 premiers jours
       // puis on mappe le tableau pour trouver la longueur du tableau de slots la plus grande entre les 3 jours
-      setArraydatas(datas.slice(0, 3));
-      const newArray = datas.slice(0, 3);
+      setAvaib(test.slice(0, 3));
+      const newArray = test.slice(0, 3);
       getLengthArray(newArray);
     } else if (resolution < 1024) {
-      setArraydatas(datas.slice(0, 4));
-      const newArray = datas.slice(0, 4);
+      setAvaib(test.slice(0, 4));
+      const newArray = test.slice(0, 4);
       getLengthArray(newArray);
     } else {
       // on récupére tous les jours
-      getLengthArray(datas);
-      setArraydatas(datas);
+      setAvaib(test.slice(0, 6));
+      const newArray = test.slice(0, 6);
+      getLengthArray(newArray);
     }
   };
 
   useEffect(() => {
-    // creation d'un évenement au redimentionnement de la fênetre
-    window.addEventListener('resize', getResolution);
-    getResolution();
-  }, [datas]);
+    window.addEventListener('resize', getResolutionB);
+    getResolutionB();
+  }, []);
 
-  const handleClickAvailability = () => {};
+  const handleClickAvailabilityBefore = () => {
+    console.log('jours précedents');
+  };
+  const handleClickAvailabilityAfter = () => {
+    console.log('dispos suivantes');
+  };
 
   const HandleMoreAvailability = () => {
     switch (nameButton) {
@@ -168,19 +201,18 @@ const Calendar: FC = () => {
           >
             <StyledGridIcon xs={1}>
               <IconButton
-                aria-label='dates précedentes'
-                onClick={handleClickAvailability}
+                aria-label=' voie lesdates précedentes'
+                onClick={handleClickAvailabilityBefore}
               >
                 <ArrowBackIosIcon />
               </IconButton>
             </StyledGridIcon>
-            {arraydatas.map((data, index) => (
+            {avaib.map((data, index) => (
               <StyledGridDatas xs={3} sm={2} key={`avaib-${index}`}>
                 <StyledGridDate>
                   <Typography> {data.day} </Typography>
                   <Typography>
-                    {data.number}
-                    {data.month}
+                    {data.date} {data.month.substring(0, 3)}.
                   </Typography>
                 </StyledGridDate>
                 <StyledGridAvailability>
@@ -189,10 +221,7 @@ const Calendar: FC = () => {
                   {Array.from(new Array(arraylength)).map((_, i) => (
                     <div>
                       {data.slots[i] ? (
-                        <StyledButton
-                          onClick={handleClickAvailability}
-                          key={`slot-${index}`}
-                        >
+                        <StyledButton key={`slot-${index}`}>
                           {data.slots[i]}
                         </StyledButton>
                       ) : (
@@ -206,7 +235,10 @@ const Calendar: FC = () => {
               </StyledGridDatas>
             ))}
             <StyledGridIcon xs={1}>
-              <IconButton aria-label='dates suivantes'>
+              <IconButton
+                aria-label='voir les dates suivantes'
+                onClick={handleClickAvailabilityBefore}
+              >
                 <ArrowForwardIosIcon />
               </IconButton>
             </StyledGridIcon>
