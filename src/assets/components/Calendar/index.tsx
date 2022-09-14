@@ -1,19 +1,16 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
+import { FC, useEffect, useState, MouseEvent } from 'react';
 import { Typography, IconButton, Divider, Card } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 // import interne
-import { dateType, formatDate } from '../../types';
-import { convertir } from '../../services/convertionDate';
+import { dateType } from '../../types';
 import { dispos } from '../../datas/dispos';
+import { convertDate, convertTime } from '../../services/convertionDate';
 // import des composants mui stylés
 import {
-  StyledBox,
-  StyledBoxBis,
   StyledGridDate,
   StyledGridAvailability,
-  StyledDivAvailability,
   StyledDivAvailabilityEmpty,
   StyledGridDatas,
   StyledDivAvailabilityDash,
@@ -23,70 +20,26 @@ import {
   StyledGridMoreAvailability,
   StyledButtonMoreAvailability,
 } from './styledCalendar';
-
-type date = {
-  day: string;
-  number: number;
-  month: string;
-  slots: string[];
+const TITLEBUTTON = {
+  MORE: "VOIR PLUS D'HORAIRE",
+  LEST: "VOIR MOINS D'HORAIRE",
 };
 
-const datas: Array<date> = [
-  {
-    day: 'lundi',
-    number: 1,
-    month: 'sept',
-    slots: ['11:00', '15:00'],
-  },
-  {
-    day: 'mardi',
-    number: 2,
-    month: 'sept',
-    slots: ['12:00', '16:00', '17:00'],
-  },
-  {
-    day: 'mercredi',
-    number: 3,
-    month: 'sept',
-    slots: [],
-  },
-  {
-    day: 'jeudi',
-    number: 4,
-    month: 'sept',
-    slots: ['08:00', '09:00', '16:00', '17:00', '18:00'],
-  },
-  {
-    day: 'vendredi',
-    number: 5,
-    month: 'sept',
-    slots: ['08:00', '09:00', '13:00', '14:00', '15:00', '16:00', '17:00'],
-  },
-  {
-    day: 'samedi',
-    number: 6,
-    month: 'sept',
-    slots: ['13:00', '14:00', '15:00'],
-  },
-];
-
 const Calendar: FC = () => {
-  const [arraydatas, setArraydatas] = useState(datas);
-  const [avaib, setAvaib] = useState<formatDate[]>([]);
-  //  const [arraydatas, setArraydatas] = useState<formatDate>();
+  const [arraydatas, setArraydatas] = useState(dispos);
   // state pour la longueur du tableau de disponibilité
   const [arraylength, setArraylength] = useState(4);
-  // state pour connaite la valeur de la plus grande longueur de tableau slots
+  // state pour connaitre la valeur de la plus grande longueur de tableau slots
   const [greatValueArraySlots, setGreatValueArraySlots] = useState(4);
   // state pour voir le button voir plus d'horaire
   const [showButton, setShowButton] = useState(false);
   // nom pour le bouton plus ou moins d'horaire
-  const [nameButton, setNameButton] = useState(`Voir plus d'horaire`);
+  const [nameButton, setNameButton] = useState(TITLEBUTTON.MORE);
 
   // fonction permettant de récupérer la longueur du tableau des slots
   // et si cette longueur > 3 on affiche le button 'voir plus d'horaire"
 
-  const getLengthArray = (array: Array<formatDate>) => {
+  const getLengthArray = (array: Array<dateType>) => {
     const greatLength: number[] = [];
     {
       array.map((data) => {
@@ -95,78 +48,60 @@ const Calendar: FC = () => {
         {
           data.slots.length <= 3 ? setShowButton(false) : setShowButton(true);
         }
-        console.log(data.slots.length);
         setGreatValueArraySlots(data.slots.length);
       });
     }
   };
   // fonction vérifiant la résolution de l'écran et selon la résolution modifie le tableau des dates
-  // const getResolution = () => {
-  //   const resolution = window.screen.width;
-  //   setArraylength(4);
-  //   console.log(resolution);
-  //   if (resolution < 768) {
-  //     // on reduit le tableau à une longueur de 3 afin d'afficher que les 3 premiers jours
-  //     // puis on mappe le tableau pour trouver la longueur du tableau de slots la plus grande entre les 3 jours
-  //     setArraydatas(datas.slice(0, 3));
-  //     const newArray = datas.slice(0, 3);
-  //     getLengthArray(newArray);
-  //   } else if (resolution < 1024) {
-  //     setArraydatas(datas.slice(0, 4));
-  //     const newArray = datas.slice(0, 4);
-  //     getLengthArray(newArray);
-  //   } else {
-  //     // on récupére tous les jours
-  //     getLengthArray(datas);
-  //     setArraydatas(datas);
-  //   }
-  // };
-  const getResolutionB = () => {
+  const getResolution = () => {
     const resolution = window.screen.width;
     setArraylength(4);
-    console.log(resolution);
-    const test = convertir(dispos);
-    setAvaib(test);
-    console.log(test);
     if (resolution < 768) {
-      // on reduit le tableau à une longueur de 3 afin d'afficher que les 3 premiers jours
+      // En resolution <768 reduit le tableau à une longueur de 3 afin d'afficher que les 3 premiers jours
       // puis on mappe le tableau pour trouver la longueur du tableau de slots la plus grande entre les 3 jours
-      setAvaib(test.slice(0, 3));
-      const newArray = test.slice(0, 3);
+      setArraydatas(dispos.slice(0, 3));
+      const newArray = dispos.slice(0, 3);
       getLengthArray(newArray);
     } else if (resolution < 1024) {
-      setAvaib(test.slice(0, 4));
-      const newArray = test.slice(0, 4);
+      // En resolution < 1024 reduit le tableau à une longueur de 4 afin d'afficher que les 4 premiers jours
+      // puis on mappe le tableau pour trouver la longueur du tableau de slots la plus grande entre les 4 jour
+      setArraydatas(dispos.slice(0, 4));
+      const newArray = dispos.slice(0, 4);
       getLengthArray(newArray);
     } else {
-      // on récupére tous les jours
-      setAvaib(test.slice(0, 6));
-      const newArray = test.slice(0, 6);
+      // on récupére 6 jours
+      setArraydatas(dispos.slice(0, 6));
+      const newArray = dispos.slice(0, 6);
       getLengthArray(newArray);
     }
   };
 
   useEffect(() => {
-    window.addEventListener('resize', getResolutionB);
-    getResolutionB();
-  }, []);
+    // A chaque reinitilisation de la taille en effectuer le fonction getResolution()
+    window.addEventListener('resize', getResolution);
+    getResolution();
+  }, [dispos]);
 
-  const handleClickAvailabilityBefore = () => {
+  const handleClickAvailabilityBefore = (
+    event: MouseEvent<HTMLButtonElement>,
+  ) => {
     console.log('jours précedents');
   };
-  const handleClickAvailabilityAfter = () => {
+  const handleClickAvailabilityAfter = (
+    event: MouseEvent<HTMLButtonElement>,
+  ) => {
     console.log('dispos suivantes');
   };
 
   const HandleMoreAvailability = () => {
     switch (nameButton) {
-      case "Voir plus d'horaire":
+      case TITLEBUTTON.MORE:
         setArraylength(greatValueArraySlots);
-        setNameButton(`Voir moins d'horaire`);
+        setNameButton(TITLEBUTTON.LEST);
         break;
-      case "Voir moins d'horaire":
+      case TITLEBUTTON.LEST:
         setArraylength(4);
-        setNameButton(`Voir plus d'horaire`);
+        setNameButton(TITLEBUTTON.MORE);
         break;
       default:
         setArraylength(greatValueArraySlots);
@@ -207,29 +142,42 @@ const Calendar: FC = () => {
                 <ArrowBackIosIcon />
               </IconButton>
             </StyledGridIcon>
-            {avaib.map((data, index) => (
-              <StyledGridDatas xs={3} sm={2} key={`avaib-${index}`}>
+            {arraydatas.map((data, index) => (
+              <StyledGridDatas xs={3} sm={2} key={`avaib-${data.day}`}>
                 <StyledGridDate>
-                  <Typography> {data.day} </Typography>
                   <Typography>
-                    {data.date} {data.month.substring(0, 3)}.
+                    {convertDate(data.day, {
+                      weekday: 'long',
+                    })}
+                  </Typography>
+                  <Typography>
+                    {convertDate(data.day, {
+                      day: 'numeric',
+                    })}{' '}
+                    {convertDate(data.day, {
+                      month: 'long',
+                    }).substring(0, 3)}
+                    .
                   </Typography>
                 </StyledGridDate>
                 <StyledGridAvailability>
                   {/* permet de créer un tableau de la longueur arraylength (4 en initial ou de la valeur calculée lors l'évenement onClick de "voir plus d'horaire")
                     et de mapper data.slots avec des index supérieurs à data.slots.length */}
                   {Array.from(new Array(arraylength)).map((_, i) => (
-                    <div>
+                    <Grid>
                       {data.slots[i] ? (
                         <StyledButton key={`slot-${index}`}>
-                          {data.slots[i]}
+                          {convertTime(data.slots[i], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
                         </StyledButton>
                       ) : (
                         <StyledDivAvailabilityEmpty key={`slot-empty-${index}`}>
                           <StyledDivAvailabilityDash />
                         </StyledDivAvailabilityEmpty>
                       )}
-                    </div>
+                    </Grid>
                   ))}
                 </StyledGridAvailability>
               </StyledGridDatas>
@@ -237,7 +185,7 @@ const Calendar: FC = () => {
             <StyledGridIcon xs={1}>
               <IconButton
                 aria-label='voir les dates suivantes'
-                onClick={handleClickAvailabilityBefore}
+                onClick={handleClickAvailabilityAfter}
               >
                 <ArrowForwardIosIcon />
               </IconButton>

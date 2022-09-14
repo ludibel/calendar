@@ -12,7 +12,7 @@ export const StyledGridDate = styled('div')({
 });
 export const StyledGridAvailability = styled(Grid)({
   textAlign: 'center',
-});
+}) as typeof Grid;
 export const StyledDivAvailability = styled('div')({
   borderRadius: 4,
   fontSize: 14,
@@ -45,18 +45,18 @@ export const StyledDivAvailabilityDash = styled('div')({
 });
 export const StyledGridDatas = styled(Grid)({
   textAlign: 'center',
-});
+}) as typeof Grid;
 export const StyledBoxBis = styled(Box)(({ theme }) => ({
   backgroundColor: '#f6f6f6',
   marginRight: '3em',
   marginLeft: '3em',
-}));
+})) as typeof Box;
 export const StyledGridContainer = styled(Grid)(({ theme }) => ({
   // display: 'flex',
-}));
+})) as typeof Grid;
 export const StyledGridIcon = styled(Grid)(({ theme }) => ({
   // flex: 0,
-}));
+})) as typeof Grid;
 export const StyledButton = styled(Button)(({ theme }) => ({
   borderRadius: 4,
   fontSize: 14,
@@ -69,12 +69,12 @@ export const StyledButton = styled(Button)(({ theme }) => ({
   lineHeight: '34px',
   width: '100%',
   color: '#2b4660',
-}));
+})) as typeof Button;
 export const StyledGridMoreAvailability = styled(Grid)(({ theme }) => ({
   textAlign: 'center',
-}));
+})) as typeof Grid;
 export const StyledButtonMoreAvailability = styled(Button)(({ theme }) => ({
   fontSize: '1em',
   fontWeight: 700,
   color: '#107aca',
-}));
+})) as typeof Button;

@@ -1,9 +1,6 @@
-type date = {
-  day: string;
-  slots: string[];
-};
+import { dateType } from '../types';
 
-export const dispos: Array<date> = [
+export const dispos: Array<dateType> = [
   {
     day: '2022-09-01',
     slots: ['2022-09-01T11:20:00.000+02:00', '2022-09-01T15:00:00.000+02:00'],
