@@ -21,7 +21,7 @@ jobs:
           cache-dependency-path: 'yarn.lock'
 
       - name: 'Build docker image'
-        run: docker-compose build
+        run: USER_ID=$(id -u) GROUP_ID=$(id -g) docker-compose build
 
       - name: 'Start container'
         run: docker-compose up -d
