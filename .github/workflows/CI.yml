@@ -37,8 +37,8 @@ jobs:
       - name: 'Install dependencies'
         run: yarn install
 
-      - name: 'Launch application'
-        run: yarn build
+      # - name: 'Launch application'
+      #   run: yarn build
 
       - name: 'Exit container'
         if: always()

@@ -1,4 +1,4 @@
-Application de réservation
+[![Continuous Integration](https://github.com/ludibel/calendar/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/ludibel/calendar/actions/workflows/CI.yml)
 
 ## Installation des dépendances
 
@@ -26,7 +26,7 @@ Application de réservation
 
 et
 
-jsdom aide à obtenir l'environnement de test dans le DOM
+jsdom aide à obtenir l'environnement de test dans le DOM, émule l'environnement du navigateur en fournissant l'API du navigateur
 
 Testing-library/React permet d'avoir des fonctions utilitaires pour tester des composant
 
