@@ -37,9 +37,6 @@ jobs:
       - name: 'Install dependencies'
         run: yarn install
 
-      - name: 'run lint'
-        run: yarn lint
-
       - name: 'Launch application'
         run: yarn build
 
