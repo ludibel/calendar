@@ -20,6 +20,7 @@ import {
   StyledGridMoreAvailability,
   StyledButtonMoreAvailability,
 } from './styledCalendar';
+
 const TITLEBUTTON = {
   MORE: "VOIR PLUS D'HORAIRE",
   LEST: "VOIR MOINS D'HORAIRE",
