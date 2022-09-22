@@ -1,4 +1,5 @@
-import { FC, useEffect, useState, MouseEvent } from 'react';
+import React, { FC, useEffect, useState, MouseEvent } from 'react';
+
 import { Typography, IconButton, Divider, Card } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -7,6 +8,8 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { dateType } from '../../types';
 import { dispos } from '../../datas/dispos';
 import { convertDate, convertTime } from '../../services/convertionDate';
+import Modal from '../Modal';
+import useModal from '../../hooks/useModal';
 // import des composants mui stylés
 import {
   StyledGridDate,
@@ -36,6 +39,8 @@ const Calendar: FC = () => {
   const [showButton, setShowButton] = useState(false);
   // nom pour le bouton plus ou moins d'horaire
   const [nameButton, setNameButton] = useState(TITLEBUTTON.MORE);
+  // utilisation du hook personnalisé useHook
+  const { openModal, toggleOpenings } = useModal();
 
   // fonction permettant de récupérer la longueur du tableau des slots
   // et si cette longueur > 3 on affiche le button 'voir plus d'horaire"
@@ -108,106 +113,122 @@ const Calendar: FC = () => {
         setArraylength(greatValueArraySlots);
     }
   };
-
+  const content = (
+    <React.Fragment>
+      Ton rendez-vous du XXX à HH:mm à bien éte enregistré
+    </React.Fragment>
+  );
   return (
-    <Card>
-      <Grid
-        container
-        direction='row'
-        justifyContent='center'
-        alignContent='center'
-        spacing={1}
-      >
-        <Grid xs={12} sm={4} md={3}>
-          Profil
-          <p>
-            {' '}
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sint eum a
-            consequatur doloribus nemo incidunt exercitationem repellendus
-            quisquam, adipisci quia!
-          </p>
-        </Grid>
-        <Grid xs={12} sm={8} md={9}>
-          <StyledGridContainer
-            container
-            direction='row'
-            justifyContent='center'
-            alignContent='center'
-            columns={{ xs: 12, md: 14 }}
-          >
-            <StyledGridIcon xs={1}>
-              <IconButton
-                aria-label=' voie lesdates précedentes'
-                onClick={handleClickAvailabilityBefore}
-              >
-                <ArrowBackIosIcon />
-              </IconButton>
-            </StyledGridIcon>
-            {arraydatas.map((data, index) => (
-              <StyledGridDatas xs={3} sm={2} key={`avaib-${data.day}`}>
-                <StyledGridDate>
-                  <Typography>
-                    {convertDate(data.day, {
-                      weekday: 'long',
-                    })}
-                  </Typography>
-                  <Typography>
-                    {convertDate(data.day, {
-                      day: 'numeric',
-                    })}{' '}
-                    {convertDate(data.day, {
-                      month: 'long',
-                    }).substring(0, 3)}
-                    .
-                  </Typography>
-                </StyledGridDate>
-                <StyledGridAvailability>
-                  {/* permet de créer un tableau de la longueur arraylength (4 en initial ou de la valeur calculée lors l'évenement onClick de "voir plus d'horaire")
+    <>
+      <Modal
+        openModal={openModal}
+        hide={toggleOpenings}
+        headerTitle='Mon rendez-vous'
+        modalContent={content}
+      />
+      <Card>
+        <Grid
+          container
+          direction='row'
+          justifyContent='center'
+          alignContent='center'
+          spacing={1}
+        >
+          <Grid xs={12} sm={4} md={3}>
+            Profil
+            <p>
+              {' '}
+              Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sint eum
+              a consequatur doloribus nemo incidunt exercitationem repellendus
+              quisquam, adipisci quia!
+            </p>
+          </Grid>
+          <Grid xs={12} sm={8} md={9}>
+            <StyledGridContainer
+              container
+              direction='row'
+              justifyContent='center'
+              alignContent='center'
+              columns={{ xs: 12, md: 14 }}
+            >
+              <StyledGridIcon xs={1}>
+                <IconButton
+                  aria-label=' voir les dates précedentes'
+                  onClick={handleClickAvailabilityBefore}
+                  data-testid='open-modal'
+                >
+                  <ArrowBackIosIcon />
+                </IconButton>
+              </StyledGridIcon>
+              {arraydatas.map((data, index) => (
+                <StyledGridDatas xs={3} sm={2} key={`avaib-${data.day}`}>
+                  <StyledGridDate>
+                    <Typography>
+                      {convertDate(data.day, {
+                        weekday: 'long',
+                      })}
+                    </Typography>
+                    <Typography>
+                      {convertDate(data.day, {
+                        day: 'numeric',
+                      })}{' '}
+                      {convertDate(data.day, {
+                        month: 'long',
+                      }).substring(0, 3)}
+                      .
+                    </Typography>
+                  </StyledGridDate>
+                  <StyledGridAvailability>
+                    {/* permet de créer un tableau de la longueur arraylength (4 en initial ou de la valeur calculée lors l'évenement onClick de "voir plus d'horaire")
                     et de mapper data.slots avec des index supérieurs à data.slots.length */}
-                  {Array.from(new Array(arraylength)).map((_, i) => (
-                    <Grid>
-                      {data.slots[i] ? (
-                        <StyledButton key={`slot-${index}`}>
-                          {convertTime(data.slots[i], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </StyledButton>
-                      ) : (
-                        <StyledDivAvailabilityEmpty key={`slot-empty-${index}`}>
-                          <StyledDivAvailabilityDash />
-                        </StyledDivAvailabilityEmpty>
-                      )}
-                    </Grid>
-                  ))}
-                </StyledGridAvailability>
-              </StyledGridDatas>
-            ))}
-            <StyledGridIcon xs={1}>
-              <IconButton
-                aria-label='voir les dates suivantes'
-                onClick={handleClickAvailabilityAfter}
-              >
-                <ArrowForwardIosIcon />
-              </IconButton>
-            </StyledGridIcon>
-          </StyledGridContainer>
-          <Divider />
-          {showButton ? (
-            <StyledGridMoreAvailability>
-              <StyledButtonMoreAvailability
-                variant='text'
-                onClick={HandleMoreAvailability}
-              >
-                {nameButton}
-              </StyledButtonMoreAvailability>
-            </StyledGridMoreAvailability>
-          ) : (
-            ''
-          )}
+                    {Array.from(new Array(arraylength)).map((_, i) => (
+                      <Grid key={`slot-${i}`}>
+                        {data.slots[i] ? (
+                          <StyledButton
+                            saria-label='selectionne heure choisie'
+                            onClick={toggleOpenings}
+                          >
+                            {convertTime(data.slots[i], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}
+                          </StyledButton>
+                        ) : (
+                          <StyledDivAvailabilityEmpty>
+                            <StyledDivAvailabilityDash />
+                          </StyledDivAvailabilityEmpty>
+                        )}
+                      </Grid>
+                    ))}
+                  </StyledGridAvailability>
+                </StyledGridDatas>
+              ))}
+              <StyledGridIcon xs={1}>
+                <IconButton
+                  aria-label='voir les dates suivantes'
+                  onClick={handleClickAvailabilityAfter}
+                >
+                  <ArrowForwardIosIcon />
+                </IconButton>
+              </StyledGridIcon>
+            </StyledGridContainer>
+            <Divider />
+            {showButton ? (
+              <StyledGridMoreAvailability>
+                <StyledButtonMoreAvailability
+                  variant='text'
+                  onClick={HandleMoreAvailability}
+                >
+                  {nameButton}
+                </StyledButtonMoreAvailability>
+              </StyledGridMoreAvailability>
+            ) : (
+              ''
+            )}
+          </Grid>
         </Grid>
-      </Grid>
-    </Card>
+      </Card>
+    </>
   );
 };
 
