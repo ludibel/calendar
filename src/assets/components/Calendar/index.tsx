@@ -1,6 +1,21 @@
-import React, { FC, useEffect, useState, MouseEvent } from 'react';
+import React, {
+  FC,
+  useEffect,
+  useState,
+  MouseEvent,
+  useRef,
+  createRef,
+  useMemo,
+} from 'react';
 
-import { Typography, IconButton, Divider, Card } from '@mui/material';
+import {
+  Typography,
+  IconButton,
+  Divider,
+  Card,
+  Button,
+  ButtonTypeMap,
+} from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -39,11 +54,10 @@ const Calendar: FC = () => {
   const [showButton, setShowButton] = useState(false);
   // nom pour le bouton plus ou moins d'horaire
   const [nameButton, setNameButton] = useState(TITLEBUTTON.MORE);
+  // content pour la modal
+  const [contentModal, setContentModal] = useState('rendez vous');
   // utilisation du hook personnalisé useHook
   const { openModal, toggleOpenings } = useModal();
-
-  // fonction permettant de récupérer la longueur du tableau des slots
-  // et si cette longueur > 3 on affiche le button 'voir plus d'horaire"
 
   const getLengthArray = (array: Array<dateType>) => {
     const greatLength: number[] = [];
@@ -91,11 +105,13 @@ const Calendar: FC = () => {
   const handleClickAvailabilityBefore = (
     event: MouseEvent<HTMLButtonElement>,
   ) => {
+    // TODO requete back pour avoir les dispos avant la date données et dans la limit 6
     console.log('jours précedents');
   };
   const handleClickAvailabilityAfter = (
     event: MouseEvent<HTMLButtonElement>,
   ) => {
+    // TODO requete back pour avoir les dispos avant la date données et dans la limit 6
     console.log('dispos suivantes');
   };
 
@@ -113,11 +129,29 @@ const Calendar: FC = () => {
         setArraylength(greatValueArraySlots);
     }
   };
-  const content = (
-    <React.Fragment>
-      Ton rendez-vous du XXX à HH:mm à bien éte enregistré
-    </React.Fragment>
-  );
+
+  const content = <React.Fragment>{contentModal}</React.Fragment>;
+
+  const handleClickButton = (slot: string) => () => {
+    const date = convertDate(slot, {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+    const hours = convertTime(slot, {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    setContentModal(
+      `Votre rendez-vous du ${date} à ${hours} a bien été enregistré`,
+    );
+    toggleOpenings();
+    // TODO faire la requete au back:
+    // 1. modification des disponibilités
+    // 2. get les nouvelles dispos
+    // 3. get le rendez vous dans l'agenda
+  };
+
   return (
     <>
       <Modal
@@ -185,8 +219,8 @@ const Calendar: FC = () => {
                       <Grid key={`slot-${i}`}>
                         {data.slots[i] ? (
                           <StyledButton
-                            saria-label='selectionne heure choisie'
-                            onClick={toggleOpenings}
+                            aria-label='selectionne heure choisie'
+                            onClick={handleClickButton(data.slots[i])}
                           >
                             {convertTime(data.slots[i], {
                               hour: '2-digit',
