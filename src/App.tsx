@@ -1,9 +1,9 @@
-import Calendar from './assets/components/Calendar';
+import ProfilAvaibility from './assets/components/ProfilAvaibility';
 
 const App = () => {
   return (
     <>
-      <Calendar />
+      <ProfilAvaibility />
     </>
   );
 };

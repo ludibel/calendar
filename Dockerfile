@@ -16,8 +16,8 @@ RUN apk add --no-cache \
 
 USER $USERNAME
 
-RUN git config --global user.email "ludibelle@outlook.com" \
-    && git config --global user.name "ludibel"
+RUN git config --global user.email "test@test.com" \
+    && git config --global user.name "test"
 
 WORKDIR /app
 
