@@ -2,10 +2,10 @@
 
 # Application de prise de rendez-vous
 
-![cover](https://github.com/ludibel/calendar/public/calendar_availability.png)
-
 Application de prise de rendez-vous à la façon "doctolib" dans le but de mettre en
 relation des profils similaires qui peuvent s'exercer aux entretiens d'embauche en s'appuyant sur la solution de visioconférence open source JITSI.
+
+![cover](./public/calendar_availability.png)
 
 Les technologies, languages et frameworks utilisés sont :
 
@@ -21,7 +21,7 @@ Les technologies, languages et frameworks utilisés sont :
 
 1. Création d'un fichier Dockerfile
 2. Création du fichier docker-compose
-3. Exécutez les commandes suivantes (sous linux):
+3. Exécuter les commandes suivantes (sous linux):
 
 Ne pas oublier de changer les arguments ARG et les paramétres git dans le fichier Dockerfile
 
