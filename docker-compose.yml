@@ -1,6 +1,6 @@
 services:
   node:
-    container_name: docker_node
+    container_name: docker_node2
     build:
       context: ./
       target: node
@@ -8,8 +8,7 @@ services:
         USER_ID: ${USER_ID}
         GROUP_ID: ${GROUP_ID}
     ports:
-      - "3000:3000"
+      - '3000:3000'
     tty: true
     volumes:
       - .:/app
-
