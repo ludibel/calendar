@@ -142,7 +142,7 @@ const Calendar: FC = () => {
       <Modal
         openModal={openModal}
         hide={toggleOpenings}
-        headerTitle='Mon rendez-vous'
+        headerTitle='Confirmation du rendez-vous'
         modalContent={content}
       />
       <StyledGridContainer
